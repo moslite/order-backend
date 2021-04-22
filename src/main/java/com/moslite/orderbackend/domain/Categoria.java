@@ -1,12 +1,17 @@
 package com.moslite.orderbackend.domain;
 
+import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Objects;
 
+@Entity
+@Table(name = "tb_categoria")
 public class Categoria implements Serializable {
 
     private static final long serialVersionUID = -5303244954348881422L;
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
     private String nome;
