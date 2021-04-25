@@ -1,8 +1,12 @@
 package com.moslite.orderbackend;
 
 import com.moslite.orderbackend.domain.Categoria;
+import com.moslite.orderbackend.domain.Cidade;
+import com.moslite.orderbackend.domain.Estado;
 import com.moslite.orderbackend.domain.Produto;
 import com.moslite.orderbackend.repositories.CategoriaRepository;
+import com.moslite.orderbackend.repositories.CidadeRepository;
+import com.moslite.orderbackend.repositories.EstadoRepository;
 import com.moslite.orderbackend.repositories.ProdutoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
@@ -19,6 +23,12 @@ public class OrderBackendApplication implements CommandLineRunner {
 
     @Autowired
     private ProdutoRepository produtoRepository;
+
+    @Autowired
+    private EstadoRepository estadoRepository;
+
+    @Autowired
+    private CidadeRepository cidadeRepository;
 
     public static void main(String[] args) {
         SpringApplication.run(OrderBackendApplication.class, args);
@@ -42,5 +52,18 @@ public class OrderBackendApplication implements CommandLineRunner {
 
         categoriaRepository.saveAll(Arrays.asList(cat1, cat2));
         produtoRepository.saveAll(Arrays.asList(p1, p2, p3));
+
+        Estado est1 = new Estado(null, "Minas Gerais");
+        Estado est2 = new Estado(null, "São Paulo");
+
+        Cidade c1 = new Cidade(null, "Uberlandia", est1);
+        Cidade c2 = new Cidade(null, "São Paulo", est2);
+        Cidade c3 = new Cidade(null, "Campinas", est2);
+
+        est1.getCidades().add(c1);
+        est2.getCidades().addAll(Arrays.asList(c2, c3));
+
+        estadoRepository.saveAll(Arrays.asList(est1, est2));
+        cidadeRepository.saveAll(Arrays.asList(c1, c2, c3));
     }
 }
