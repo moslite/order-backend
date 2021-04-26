@@ -1,13 +1,8 @@
 package com.moslite.orderbackend;
 
-import com.moslite.orderbackend.domain.Categoria;
-import com.moslite.orderbackend.domain.Cidade;
-import com.moslite.orderbackend.domain.Estado;
-import com.moslite.orderbackend.domain.Produto;
-import com.moslite.orderbackend.repositories.CategoriaRepository;
-import com.moslite.orderbackend.repositories.CidadeRepository;
-import com.moslite.orderbackend.repositories.EstadoRepository;
-import com.moslite.orderbackend.repositories.ProdutoRepository;
+import com.moslite.orderbackend.domain.*;
+import com.moslite.orderbackend.domain.enums.TipoCliente;
+import com.moslite.orderbackend.repositories.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -29,6 +24,12 @@ public class OrderBackendApplication implements CommandLineRunner {
 
     @Autowired
     private CidadeRepository cidadeRepository;
+
+    @Autowired
+    private ClienteRepository clienteRepository;
+
+    @Autowired
+    private EnderecoRepository enderecoRepository;
 
     public static void main(String[] args) {
         SpringApplication.run(OrderBackendApplication.class, args);
@@ -65,5 +66,15 @@ public class OrderBackendApplication implements CommandLineRunner {
 
         estadoRepository.saveAll(Arrays.asList(est1, est2));
         cidadeRepository.saveAll(Arrays.asList(c1, c2, c3));
+
+        Cliente cli1 = new Cliente(null, "Maria Silva", "maria@gmail.com", "3523265489", TipoCliente.PESSOA_FISICA);
+        cli1.getTelefones().addAll(Arrays.asList("32633333", "32654879"));
+
+        Endereco e1 = new Endereco(null, "Rua Flores", "300", "Apto 303", "Jardim", "3265459", cli1, c1);
+        Endereco e2 = new Endereco(null, "Avenida Matos", "105", "Sala 800", "Centro", "26456464", cli1, c2);
+        cli1.getEnderecos().addAll(Arrays.asList(e1, e2));
+
+        clienteRepository.save(cli1);
+        enderecoRepository.saveAll(Arrays.asList(e1, e2));
     }
 }
