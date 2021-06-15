@@ -23,7 +23,7 @@ public class CategoriaService {
                 Categoria.class.getName()));
     }
 
-    public List<Categoria> buscarTodas() {
+    public List<Categoria> findAll() {
         return categoriaRepository.findAll();
     }
 

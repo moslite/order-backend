@@ -1,6 +1,7 @@
 package com.moslite.orderbackend.resources;
 
 import com.moslite.orderbackend.domain.Categoria;
+import com.moslite.orderbackend.dto.CategoriaDTO;
 import com.moslite.orderbackend.services.CategoriaService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -9,6 +10,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping(value = "/categorias")
@@ -24,9 +26,10 @@ public class CategoriaResource {
     }
 
     @GetMapping
-    public ResponseEntity<?> findAll() {
-        List<Categoria> categorias = categoriaService.buscarTodas();
-        return ResponseEntity.ok().body(categorias);
+    public ResponseEntity<List<CategoriaDTO>> findAll() {
+        List<Categoria> categorias = categoriaService.findAll();
+        List<CategoriaDTO> list = categorias.stream().map(CategoriaDTO::new).collect(Collectors.toList());
+        return ResponseEntity.ok().body(list);
     }
 
     @PostMapping
