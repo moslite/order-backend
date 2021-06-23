@@ -1,6 +1,7 @@
 package com.moslite.orderbackend.services;
 
 import com.moslite.orderbackend.domain.Categoria;
+import com.moslite.orderbackend.dto.CategoriaDTO;
 import com.moslite.orderbackend.repositories.CategoriaRepository;
 import com.moslite.orderbackend.services.exceptions.DataIntegrityException;
 import com.moslite.orderbackend.services.exceptions.ObjectNotFoundException;
@@ -54,5 +55,10 @@ public class CategoriaService {
         PageRequest pageRequest = PageRequest.of(page, linesPerPage, Sort.Direction.valueOf(direction), orderBy);
         return categoriaRepository.findAll(pageRequest);
     }
+
+    public Categoria fromDTO(CategoriaDTO dto) {
+        return new Categoria(dto.getId(), dto.getNome());
+    }
+
 
 }
