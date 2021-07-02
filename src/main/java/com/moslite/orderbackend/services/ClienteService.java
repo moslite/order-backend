@@ -87,6 +87,10 @@ public class ClienteService {
         return obj;
     }
 
+    public Cliente findByEmail(String email) {
+        return clienteRepository.findByEmail(email);
+    }
+
     private void updateData(Cliente cliente, Cliente obj) {
         cliente.setNome(obj.getNome());
         cliente.setEmail(obj.getEmail());
