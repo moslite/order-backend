@@ -27,13 +27,6 @@ public class CategoriaResource {
         return ResponseEntity.ok().body(categoria);
     }
 
-    @GetMapping
-    public ResponseEntity<List<CategoriaDTO>> findAll() {
-        List<Categoria> categorias = categoriaService.findAll();
-        List<CategoriaDTO> list = categorias.stream().map(CategoriaDTO::new).collect(Collectors.toList());
-        return ResponseEntity.ok().body(list);
-    }
-
     @PostMapping
     public ResponseEntity<Void> insert(@Valid @RequestBody CategoriaDTO dto) {
         Categoria obj = categoriaService.fromDTO(dto);
@@ -55,6 +48,13 @@ public class CategoriaResource {
     public ResponseEntity<Void> delete(@PathVariable Integer id) {
         categoriaService.delete(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping
+    public ResponseEntity<List<CategoriaDTO>> findAll() {
+        List<Categoria> categorias = categoriaService.findAll();
+        List<CategoriaDTO> list = categorias.stream().map(CategoriaDTO::new).collect(Collectors.toList());
+        return ResponseEntity.ok().body(list);
     }
 
     @GetMapping(value = "/page")

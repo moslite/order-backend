@@ -27,10 +27,6 @@ public class CategoriaService {
                 Categoria.class.getName()));
     }
 
-    public List<Categoria> findAll() {
-        return categoriaRepository.findAll();
-    }
-
     public Categoria insert(Categoria obj) {
         obj.setId(null);
         return categoriaRepository.save(obj);
@@ -49,6 +45,10 @@ public class CategoriaService {
         } catch (DataIntegrityViolationException e) {
             throw new DataIntegrityException("Não é possível excluir uma categoria que possui produtos.");
         }
+    }
+
+    public List<Categoria> findAll() {
+        return categoriaRepository.findAll();
     }
 
     public Page<Categoria> findPage(Integer page, Integer linesPerPage, String orderBy, String direction) {
