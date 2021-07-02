@@ -1,12 +1,14 @@
 package com.moslite.orderbackend.dto;
 
 import com.moslite.orderbackend.domain.Cliente;
+import com.moslite.orderbackend.services.validation.ClienteUpdate;
 import org.hibernate.validator.constraints.Length;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotEmpty;
 import java.io.Serializable;
 
+@ClienteUpdate
 public class ClienteDTO implements Serializable {
 
     private static final long serialVersionUID = 8226274137809534041L;
