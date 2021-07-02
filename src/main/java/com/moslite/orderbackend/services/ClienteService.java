@@ -1,8 +1,14 @@
 package com.moslite.orderbackend.services;
 
+import com.moslite.orderbackend.domain.Categoria;
+import com.moslite.orderbackend.domain.Cidade;
 import com.moslite.orderbackend.domain.Cliente;
+import com.moslite.orderbackend.domain.Endereco;
+import com.moslite.orderbackend.domain.enums.TipoCliente;
 import com.moslite.orderbackend.dto.ClienteDTO;
+import com.moslite.orderbackend.dto.ClienteNewDTO;
 import com.moslite.orderbackend.repositories.ClienteRepository;
+import com.moslite.orderbackend.repositories.EnderecoRepository;
 import com.moslite.orderbackend.services.exceptions.DataIntegrityException;
 import com.moslite.orderbackend.services.exceptions.ObjectNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +26,9 @@ public class ClienteService {
 
     @Autowired
     private ClienteRepository clienteRepository;
+
+    @Autowired
+    private EnderecoRepository enderecoRepository;
 
     public Cliente find(Integer id) {
         Optional<Cliente> cliente = clienteRepository.findById(id);
@@ -54,6 +63,28 @@ public class ClienteService {
 
     public Cliente fromDTO(ClienteDTO dto) {
         return new Cliente(dto.getId(), dto.getNome(), dto.getEmail(), null, null);
+    }
+
+    public Cliente fromDTO(ClienteNewDTO dto) {
+        Cliente cliente = new Cliente(null, dto.getNome(), dto.getEmail(), dto.getCpfCnpj(), TipoCliente.toEnum(dto.getTipo()));
+        Cidade cidade = new Cidade(dto.getCidadeId(), null, null);
+        Endereco endereco = new Endereco(null, dto.getLogradouro(), dto.getNumero(), dto.getComplemento(), dto.getBairro(), dto.getCep(), cliente, cidade);
+        cliente.getEnderecos().add(endereco);
+        cliente.getTelefones().add(dto.getTelefone1());
+        if (dto.getTelefone2() != null) {
+            cliente.getTelefones().add(dto.getTelefone2());
+        }
+        if (dto.getTelefone3() != null) {
+            cliente.getTelefones().add(dto.getTelefone3());
+        }
+        return cliente;
+    }
+
+    public Cliente insert(Cliente obj) {
+        obj.setId(null);
+        obj = clienteRepository.save(obj);
+        enderecoRepository.saveAll(obj.getEnderecos());
+        return obj;
     }
 
     private void updateData(Cliente cliente, Cliente obj) {
