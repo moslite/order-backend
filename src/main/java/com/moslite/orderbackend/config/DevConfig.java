@@ -1,6 +1,8 @@
 package com.moslite.orderbackend.config;
 
 import com.moslite.orderbackend.services.DBService;
+import com.moslite.orderbackend.services.EmailService;
+import com.moslite.orderbackend.services.SmtpEmailService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -25,6 +27,11 @@ public class DevConfig {
             dbService.instantiateTestDatabase();
         }
         return true;
+    }
+
+    @Bean
+    public EmailService emailService() {
+        return new SmtpEmailService();
     }
 
 }
