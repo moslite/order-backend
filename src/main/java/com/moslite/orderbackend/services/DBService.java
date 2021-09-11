@@ -5,6 +5,7 @@ import com.moslite.orderbackend.domain.enums.EstadoPagamento;
 import com.moslite.orderbackend.domain.enums.TipoCliente;
 import com.moslite.orderbackend.repositories.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.text.ParseException;
@@ -40,6 +41,9 @@ public class DBService {
 
     @Autowired
     private ItemPedidoRepository itemPedidoRepository;
+
+    @Autowired
+    private BCryptPasswordEncoder bCryptPasswordEncoder;
 
     public void instantiateTestDatabase() throws ParseException {
         Categoria cat1 = new Categoria(null, "Informática");
@@ -98,7 +102,7 @@ public class DBService {
         estadoRepository.saveAll(Arrays.asList(est1, est2));
         cidadeRepository.saveAll(Arrays.asList(c1, c2, c3));
 
-        Cliente cli1 = new Cliente(null, "Maria Silva", "moslite@hotmail.com", "3523265489", TipoCliente.PESSOA_FISICA);
+        Cliente cli1 = new Cliente(null, "Maria Silva", "moslite@hotmail.com", "3523265489", TipoCliente.PESSOA_FISICA, bCryptPasswordEncoder.encode("123"));
         cli1.getTelefones().addAll(Arrays.asList("32633333", "32654879"));
 
         Endereco e1 = new Endereco(null, "Rua Flores", "300", "Apto 303", "Jardim", "3265459", cli1, c1);
