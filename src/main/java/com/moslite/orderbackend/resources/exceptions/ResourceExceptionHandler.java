@@ -1,5 +1,6 @@
 package com.moslite.orderbackend.resources.exceptions;
 
+import com.moslite.orderbackend.services.exceptions.AuthorizationException;
 import com.moslite.orderbackend.services.exceptions.DataIntegrityException;
 import com.moslite.orderbackend.services.exceptions.ObjectNotFoundException;
 import org.springframework.http.HttpStatus;
@@ -35,6 +36,12 @@ public class ResourceExceptionHandler {
         }
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(erro);
+    }
+
+    @ExceptionHandler(value = AuthorizationException.class)
+    public ResponseEntity<StandardError> objectNotFound(AuthorizationException e, HttpServletRequest request) {
+        StandardError erro = new StandardError(HttpStatus.FORBIDDEN.value(), e.getMessage(), System.currentTimeMillis());
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(erro);
     }
 
 }

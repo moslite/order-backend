@@ -4,13 +4,17 @@ import com.moslite.orderbackend.domain.Categoria;
 import com.moslite.orderbackend.domain.Cidade;
 import com.moslite.orderbackend.domain.Cliente;
 import com.moslite.orderbackend.domain.Endereco;
+import com.moslite.orderbackend.domain.enums.Perfil;
 import com.moslite.orderbackend.domain.enums.TipoCliente;
 import com.moslite.orderbackend.dto.ClienteDTO;
 import com.moslite.orderbackend.dto.ClienteNewDTO;
 import com.moslite.orderbackend.repositories.ClienteRepository;
 import com.moslite.orderbackend.repositories.EnderecoRepository;
+import com.moslite.orderbackend.security.UserSecurity;
+import com.moslite.orderbackend.services.exceptions.AuthorizationException;
 import com.moslite.orderbackend.services.exceptions.DataIntegrityException;
 import com.moslite.orderbackend.services.exceptions.ObjectNotFoundException;
+import org.apache.tomcat.websocket.AuthenticationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
@@ -35,6 +39,12 @@ public class ClienteService {
     private BCryptPasswordEncoder bCryptPasswordEncoder;
 
     public Cliente find(Integer id) {
+        UserSecurity user = UserService.authenticated();
+
+        if (user == null || !user.hasRole(Perfil.ADMIN) && !id.equals(user.getId())) {
+            throw new AuthorizationException("Acesso negado");
+        }
+
         Optional<Cliente> cliente = clienteRepository.findById(id);
         return cliente.orElseThrow(() -> new ObjectNotFoundException("Objeto não encontrado! Id: " + id + " Tipo: " +
                 Cliente.class.getName()));
