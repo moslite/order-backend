@@ -1,5 +1,6 @@
 package com.moslite.orderbackend.services;
 
+import com.moslite.orderbackend.domain.Cliente;
 import com.moslite.orderbackend.domain.Pedido;
 import org.springframework.mail.SimpleMailMessage;
 
@@ -15,4 +16,5 @@ public interface EmailService {
 
     void sendHtmlEmail(MimeMessage msg);
 
+    void sendNewPassword(Cliente cliente, String newPass);
 }
