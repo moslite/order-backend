@@ -1,6 +1,5 @@
 package com.moslite.orderbackend.services;
 
-import com.moslite.orderbackend.domain.Categoria;
 import com.moslite.orderbackend.domain.Cidade;
 import com.moslite.orderbackend.domain.Cliente;
 import com.moslite.orderbackend.domain.Endereco;
@@ -14,15 +13,18 @@ import com.moslite.orderbackend.security.UserSecurity;
 import com.moslite.orderbackend.services.exceptions.AuthorizationException;
 import com.moslite.orderbackend.services.exceptions.DataIntegrityException;
 import com.moslite.orderbackend.services.exceptions.ObjectNotFoundException;
-import org.apache.tomcat.websocket.AuthenticationException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.awt.image.BufferedImage;
+import java.net.URI;
 import java.util.List;
 import java.util.Optional;
 
@@ -37,6 +39,18 @@ public class ClienteService {
 
     @Autowired
     private BCryptPasswordEncoder bCryptPasswordEncoder;
+
+    @Autowired
+    private S3Service s3Service;
+
+    @Autowired
+    private ImageService imageService;
+
+    @Value("${img.prefix.client.profile}")
+    private String prefix;
+
+    @Value("${img.profile.size}")
+    private Integer imageSize;
 
     public Cliente find(Integer id) {
         UserSecurity user = UserService.authenticated();
@@ -102,7 +116,31 @@ public class ClienteService {
     }
 
     public Cliente findByEmail(String email) {
-        return clienteRepository.findByEmail(email);
+        UserSecurity user = UserService.authenticated();
+        if (user == null || !user.hasRole(Perfil.ADMIN) && !user.getUsername().equals(email)) {
+            throw new AuthorizationException("Acesso negado.");
+        }
+
+        Cliente cliente = clienteRepository.findByEmail(email);
+        if (cliente == null) {
+            throw new ObjectNotFoundException("Objeto não encontrado! ID: " + user.getId() +
+                    ", Tipo: " + Cliente.class.getName());
+        }
+        return cliente;
+    }
+
+    public URI uploadProfilePicture(MultipartFile multipartFile) {
+        UserSecurity user = UserService.authenticated();
+        if (user == null) {
+            throw new AuthorizationException("Acesso negado.");
+        }
+
+        BufferedImage bi = imageService.getJpgImageFromFile(multipartFile);
+        bi = imageService.cropSquare(bi);
+        bi = imageService.resize(bi, imageSize);
+        String fileName = prefix + user.getId() + ".jpg";
+
+        return s3Service.uploadFile(imageService.getInputStream(bi, "jpg"), fileName, "image");
     }
 
     private void updateData(Cliente cliente, Cliente obj) {

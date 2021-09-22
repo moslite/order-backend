@@ -9,6 +9,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import javax.validation.Valid;
@@ -26,6 +27,12 @@ public class ClienteResource {
     @GetMapping(value = "/{id}")
     public ResponseEntity<?> find(@PathVariable Integer id) {
         Cliente cliente = clienteService.find(id);
+        return ResponseEntity.ok().body(cliente);
+    }
+
+    @GetMapping(value = "/email")
+    public ResponseEntity<?> find(@RequestParam(value = "value") String email) {
+        Cliente cliente = clienteService.findByEmail(email);
         return ResponseEntity.ok().body(cliente);
     }
 
@@ -71,6 +78,12 @@ public class ClienteResource {
         obj = clienteService.insert(obj);
         URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}")
                 .buildAndExpand(obj.getId()).toUri();
+        return ResponseEntity.created(uri).build();
+    }
+
+    @PostMapping(value = "/picture")
+    public ResponseEntity<Void> uploadProfilePicture(@RequestParam(name = "file") MultipartFile multipartFile) {
+        URI uri = clienteService.uploadProfilePicture(multipartFile);
         return ResponseEntity.created(uri).build();
     }
 
