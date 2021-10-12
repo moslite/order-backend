@@ -3,6 +3,9 @@ package com.moslite.orderbackend.resources;
 import com.moslite.orderbackend.domain.Categoria;
 import com.moslite.orderbackend.dto.CategoriaDTO;
 import com.moslite.orderbackend.services.CategoriaService;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
@@ -22,12 +25,14 @@ public class CategoriaResource {
     @Autowired
     private CategoriaService categoriaService;
 
+    @ApiOperation(value = "Busca por id")
     @GetMapping(value = "/{id}")
     public ResponseEntity<Categoria> find(@PathVariable Integer id) {
         Categoria categoria = categoriaService.find(id);
         return ResponseEntity.ok().body(categoria);
     }
 
+    @ApiOperation(value = "Insere categoria")
     @PostMapping
     @PreAuthorize("hasAnyRole('ADMIN')")
     public ResponseEntity<Void> insert(@Valid @RequestBody CategoriaDTO dto) {
@@ -38,6 +43,7 @@ public class CategoriaResource {
         return ResponseEntity.created(uri).build();
     }
 
+    @ApiOperation(value = "Atualiza categoria")
     @PutMapping(value = "/{id}")
     @PreAuthorize("hasAnyRole('ADMIN')")
     public ResponseEntity<Void> update(@Valid @RequestBody CategoriaDTO dto, @PathVariable Integer id) {
@@ -47,6 +53,10 @@ public class CategoriaResource {
         return ResponseEntity.noContent().build();
     }
 
+    @ApiResponses(value = {
+            @ApiResponse(code = 400, message = "Não é possível excluir uma categoria que possui produtos"),
+            @ApiResponse(code = 404, message = "Código inexistente")})
+    @ApiOperation(value = "Deleta categoria")
     @DeleteMapping(value = "/{id}")
     @PreAuthorize("hasAnyRole('ADMIN')")
     public ResponseEntity<Void> delete(@PathVariable Integer id) {
@@ -54,6 +64,7 @@ public class CategoriaResource {
         return ResponseEntity.noContent().build();
     }
 
+    @ApiOperation(value = "Retorna todas categorias")
     @GetMapping
     public ResponseEntity<List<CategoriaDTO>> findAll() {
         List<Categoria> categorias = categoriaService.findAll();
@@ -61,6 +72,7 @@ public class CategoriaResource {
         return ResponseEntity.ok().body(list);
     }
 
+    @ApiOperation(value = "Retorna todas categorias com paginação")
     @GetMapping(value = "/page")
     public ResponseEntity<Page<CategoriaDTO>> findPage(
             @RequestParam(value = "page", defaultValue = "0") Integer page,
